@@ -1,6 +1,6 @@
 #!/bin/sh
 
-host=https://us-east.manta.joyent.com
+host="https://us-east.manta.joyent.com"
 latest_path=$(curl -sk "$host/Joyent_Dev/public/SmartOS/latest")
 version="${latest_path##*/}"
 platform_file="platform-$version.tgz"
@@ -25,11 +25,11 @@ shift $((OPTIND-1))
 IFS=_ read brand kernel <<(uname -v)
 if [ "$kernel" == "$version" ]; then
 	echo "Already on latest version ($kernel)."
-	$force || exit -1
+	$force ||exit -1
 fi
 
-tmp=$(mktemp -d)
-cd "$tmp" || exit -1
+tmp="$(mktemp -d)"
+cd "$tmp" ||exit -1
 
 echo -n "Downloading latest platform ($platform_file)..."
 if [ ! $(curl -sk -o "$platform_file" "$platform_url") ]; then
@@ -41,9 +41,9 @@ fi
 
 echo -n "Verifying checksum..."
 curl -sk "$md5sums_url" \
-	| grep "$platform_file" \
-	| awk '{print $1}' > expected.md5
-openssl md5 "$platform_file" | awk '{print $2}' > actual.md5
+	|grep "$platform_file" \
+	|awk '{print $1}' > expected.md5
+openssl md5 "$platform_file" |awk '{print $2}' > actual.md5
 if [ ! "$(cmp -s actual.md5 expected.md5)" ]; then
 	echo " failed"
 	exit -1
@@ -69,7 +69,7 @@ fi
 
 echo -n "Checking current boot device..."
 if [ -z "$1" ]; then
-	removables=($(disklist -r))
+	removables="($(disklist -r))"
 	echo -n " detected ${removables[@]}"
 	if [ "${#removables[@]}" -gt 1 ]; then
 		echo
@@ -117,8 +117,8 @@ else
 fi
 
 echo -n "Verifying kernel checksum on boot device..."
-openssl dgst -sha1 "$platform_dir"/i86pc/kernel/amd64/unix | cut -d ' ' -f 2 > kernel.expected
-openssl dgst -sha1 usb/platform.new/i86pc/kernel/amd64/unix | cut -d ' ' -f 2 > kernel.actual
+openssl dgst -sha1 "$platform_dir"/i86pc/kernel/amd64/unix |cut -d ' ' -f 2 > kernel.expected
+openssl dgst -sha1 usb/platform.new/i86pc/kernel/amd64/unix |cut -d ' ' -f 2 > kernel.actual
 if [ ! "$(cmp -s kernel.actual kernel.expected)" ]; then
 	echo " failed"
 	exit -1
@@ -127,7 +127,7 @@ else
 fi
 
 echo -n "Verifying boot_archive checksum on boot device..."
-openssl dgst -sha1 usb/platform.new/i86pc/amd64/boot_archive | cut -d ' ' -f 2 > boot_archive.actual
+openssl dgst -sha1 usb/platform.new/i86pc/amd64/boot_archive |cut -d ' ' -f 2 > boot_archive.actual
 if [ ! "$(cmp -s boot_archive.actual usb/platform.new/i86pc/amd64/boot_archive.hash)" ]; then
 	echo " failed"
 	exit -1
