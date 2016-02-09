@@ -1,7 +1,7 @@
 #!/bin/sh
 
 host="https://us-east.manta.joyent.com"
-latest_path=$(curl -sk "$host/Joyent_Dev/public/SmartOS/latest")
+latest_path="$(curl -sk $host/Joyent_Dev/public/SmartOS/latest)"
 version="${latest_path##*/}"
 platform_file="platform-$version.tgz"
 platform_dir="platform-$version"
