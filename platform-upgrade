@@ -22,7 +22,7 @@ while getopts :f option; do
 done
 shift $((OPTIND-1))
 
-IFS=_ read brand kernel <<(uname -v)
+IFS=_ read brand kernel << $(uname -v)
 if [ "$kernel" == "$version" ]; then
 	echo "Already on latest version ($kernel)."
 	$force ||exit -1
