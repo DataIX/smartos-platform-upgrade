@@ -145,9 +145,12 @@ else
 	echo " OK"
 fi
 
-echo
-echo "Boot device upgraded. To do:"
-echo
-echo " 1) Sanity check the contents of $tmp/usb"
-echo " 2) umount $usb"
-echo " 3) reboot"
+echo "
+
+  Boot device upgraded. To do:
+
+    1) Sanity check the contents of $tmp/usb
+    2) umount $usb
+    3) reboot
+
+"
