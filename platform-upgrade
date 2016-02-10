@@ -10,7 +10,7 @@ md5sums_url="$host$latest_path/md5sums.txt"
 
 _check_return(){
 	if [ $? -gt 0  ]; then
-		echo " failed"
+		echo " FAILED"
 		exit -1
 	else
 	        echo " OK"
@@ -47,8 +47,8 @@ _check_return
 echo "Verifying checksum..."
 curl -sk "$md5sums_url" \
 	|grep "$platform_file" \
-	|awk '{print $1}' > expected.md5
-openssl md5 "$platform_file" |awk '{print $2}' > actual.md5
+	|awk '{print $1}' >expected.md5
+openssl md5 "$platform_file" |awk '{print $2}' >actual.md5
 cmp -s actual.md5 expected.md5
 _check_return
 
@@ -102,13 +102,13 @@ umount "$usb" 2>/dev/null
 mount -F pcfs -o foldcase "$usb" "$tmp/usb"
 
 echo "Verifying kernel checksum on boot device..."
-openssl dgst -sha1 "$platform_dir"/i86pc/kernel/amd64/unix |cut -d ' ' -f 2 > kernel.expected
-openssl dgst -sha1 usb/platform.new/i86pc/kernel/amd64/unix |cut -d ' ' -f 2 > kernel.actual
+openssl dgst -sha1 "$platform_dir"/i86pc/kernel/amd64/unix |cut -d ' ' -f 2 >kernel.expected
+openssl dgst -sha1 usb/platform.new/i86pc/kernel/amd64/unix |cut -d ' ' -f 2 >kernel.actual
 cmp -s kernel.actual kernel.expected
 _check_return
 
 echo "Verifying boot_archive checksum on boot device..."
-openssl dgst -sha1 usb/platform.new/i86pc/amd64/boot_archive |cut -d ' ' -f 2 > boot_archive.actual
+openssl dgst -sha1 usb/platform.new/i86pc/amd64/boot_archive |cut -d ' ' -f 2 >boot_archive.actual
 cmp -s boot_archive.actual usb/platform.new/i86pc/amd64/boot_archive.hash
 _check_return
 
