@@ -40,11 +40,11 @@ fi
 tmp="$(mktemp -d)"
 cd "$tmp" ||exit -1
 
-echo "Downloading latest platform ($platform_file)..."
+printf '%s' "Downloading latest platform ($platform_file)..."
 curl -sk -o "$platform_file" "$platform_url"
 _check_return
 
-echo "Verifying checksum..."
+printf '%s' "Verifying checksum..."
 curl -sk "$md5sums_url" \
 	|grep "$platform_file" \
 	|awk '{print $1}' >expected.md5
@@ -52,15 +52,15 @@ openssl md5 "$platform_file" |awk '{print $2}' >actual.md5
 cmp -s actual.md5 expected.md5
 _check_return
 
-echo "Extracting latest platform..."
+printf '%s' "Extracting latest platform..."
 gtar zxf "$platform_file"
 _check_return
 
-echo "Marking release version..."
+printf '%s' "Marking release version..."
 echo $version >"$platform_dir/VERSION"
 _check_return
 
-echo "Checking current boot device..."
+printf '%s' "Checking current boot device..."
 if [ -z "$1" ]; then
 	removables="$(disklist -r)"
 	echo " detected ${removables[@]}"
@@ -93,26 +93,26 @@ else
 	echo ", OK"
 fi
 
-echo "Updating platform on boot device..."
+printf '%s' "Updating platform on boot device..."
 rsync -a "$platform_dir/" usb/platform.new/
 _check_return
 
-echo "Remounting boot device..."
+printf '%s' "Remounting boot device..."
 umount "$usb" 2>/dev/null
 mount -F pcfs -o foldcase "$usb" "$tmp/usb"
 
-echo "Verifying kernel checksum on boot device..."
+printf '%s' "Verifying kernel checksum on boot device..."
 openssl dgst -sha1 "$platform_dir"/i86pc/kernel/amd64/unix |cut -d ' ' -f 2 >kernel.expected
 openssl dgst -sha1 usb/platform.new/i86pc/kernel/amd64/unix |cut -d ' ' -f 2 >kernel.actual
 cmp -s kernel.actual kernel.expected
 _check_return
 
-echo "Verifying boot_archive checksum on boot device..."
+printf '%s' "Verifying boot_archive checksum on boot device..."
 openssl dgst -sha1 usb/platform.new/i86pc/amd64/boot_archive |cut -d ' ' -f 2 >boot_archive.actual
 cmp -s boot_archive.actual usb/platform.new/i86pc/amd64/boot_archive.hash
 _check_return
 
-echo "Activating new platform on $usb..."
+printf '%s' "Activating new platform on $usb..."
 rm -rf usb/old
 mkdir usb/old
 mv usb/platform usb/old && mv usb/platform.new usb/platform
