@@ -10,10 +10,10 @@ md5sums_url="$host$latest_path/md5sums.txt"
 
 _check_return(){
 	if [ $? -gt 0  ]; then
-		echo " FAILED"
+		printf '%s\n' ' FAILED'
 		exit -1
 	else
-	        echo " OK"
+	        printf '%s\n' ' OK'
 	fi
 }
 
@@ -24,7 +24,7 @@ while getopts :f option; do
 			force="true"
 			;;
 		\?)
-			echo "Invalid option: -$OPTARG" >&2
+			printf 'Invalid option: %s\n'  "-$OPTARG" >&2
 			exit -1
 			;;
 	esac
@@ -33,7 +33,7 @@ shift $((OPTIND-1))
 
 IFS=_ read brand kernel < <(uname -v)
 if [ "$kernel" == "$version" ]; then
-	echo "Already on latest version ($kernel)."
+	printf 'Already on latest version (%s)\n' "$kernel"
 	$force ||exit -1
 fi
 
@@ -63,7 +63,7 @@ _check_return
 printf '%s' "Checking current boot device..."
 if [ -z "$1" ]; then
 	removables="$(disklist -r)"
-	echo " detected ${removables[@]}"
+	printf ' detected %s\n' "${removables[@]}"
 	if [ "${#removables[@]}" -gt 1 ]; then
 		echo
 		echo "Error: more than one removable device detected."
@@ -73,24 +73,24 @@ if [ -z "$1" ]; then
 	usb="/dev/dsk/${removables[0]}p1"
 else
 	usb="$1"
-	echo " using $usb"
+	printf ' using %s' "$usb"
 fi
 
 umount "$usb" 2>/dev/null
 mkdir usb
 mount -F pcfs -o foldcase "$usb" "$tmp/usb"
 if [ $? -gt 0 ]; then
-	echo ", mount failed"
+	printf '%s\n' ', mount failed'
 	exit -1
 else
-	echo ", mounted"
+	printf '%s\n' ', mounted'
 fi
 
 if [ ! -d usb/platform ]; then
-	echo ", missing platform dir"
+	printf '%s\n" ', missing platform dir'
 	exit -1
 else
-	echo ", OK"
+	printf '%s\n' ', OK'
 fi
 
 printf '%s' "Updating platform on boot device..."
@@ -118,7 +118,7 @@ mkdir usb/old
 mv usb/platform usb/old && mv usb/platform.new usb/platform
 _check_return
 
-echo "
+printf '%s' "
 
   Boot device upgraded. To do:
 
